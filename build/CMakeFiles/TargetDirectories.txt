@@ -1,0 +1,3 @@
+/Users/ark/图形学/Code/RayTracingPratice/build/CMakeFiles/oneWeekend.dir
+/Users/ark/图形学/Code/RayTracingPratice/build/CMakeFiles/edit_cache.dir
+/Users/ark/图形学/Code/RayTracingPratice/build/CMakeFiles/rebuild_cache.dir

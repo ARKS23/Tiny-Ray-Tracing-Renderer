@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/ark/图形学/Code/RayTracingPratice/build",
+  "command": "/usr/bin/clang++ -g -std=gnu++17 -arch arm64 -o CMakeFiles/oneWeekend.dir/src/OneWeekend/main.cpp.o -c /Users/ark/图形学/Code/RayTracingPratice/src/OneWeekend/main.cpp",
+  "file": "/Users/ark/图形学/Code/RayTracingPratice/src/OneWeekend/main.cpp",
+  "output": "/Users/ark/图形学/Code/RayTracingPratice/build/CMakeFiles/oneWeekend.dir/src/OneWeekend/main.cpp.o"
+}
+]
