@@ -1,7 +1,7 @@
 {
 	"InstallScripts" : 
 	[
-		"/Users/ark/\u56fe\u5f62\u5b66/Code/RayTracingPratice/build/cmake_install.cmake"
+		"E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/build/cmake_install.cmake"
 	],
 	"Parallel" : false
 }

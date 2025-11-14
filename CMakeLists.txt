@@ -3,13 +3,8 @@ project(RayTracingPratice)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set (SOURCE_ONEWEEKEND
-src/OneWeekend/main.cpp
-src/OneWeekend/vec3.h
-src/OneWeekend/color.h
-src/OneWeekend/ray.h
-src/OneWeekend/hittable.h
-src/OneWeekend/sphere.h
-src/OneWeekend/hittable_list.h)
-
-add_executable(oneWeekend ${SOURCE_ONEWEEKEND})
+set (SOURCE_ONEWEEKEND src/oneWeekend/main.cpp)
+add_executable(oneWeekendTarget ${SOURCE_ONEWEEKEND})
+target_include_directories(oneWeekendTarget PUBLIC 
+                            ${CMAKE_CURRENT_SOURCE_DIR}/src/oneWeekend
+                            ${CMAKE_CURRENT_SOURCE_DIR}/src/common)

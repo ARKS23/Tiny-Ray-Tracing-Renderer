@@ -9,7 +9,7 @@ public:
     sphere(const point3& center, double radius): center(center), radius(std::fmax(0, radius)) {}
 
 public:
-    virtual bool hit(const ray& r, double ray_t_min, double ray_t_max, hit_record &record) const override {
+    virtual bool hit(const ray& r, interval ray_t, hit_record &record) const override {
         vec3 oc = center - r.origin();
         double a = r.direction().length_squared(); // 与自身dot等价
         double h = dot(r.direction(), oc);
@@ -19,9 +19,9 @@ public:
         // 求根计算，目的是求最近的交点,并且需要在【t_min, t_max】有效范围内
         double sqrtd = std::sqrt(discriminant);
         double root = (h - sqrtd) / a;
-        if (root <= ray_t_min || root >= ray_t_max) {
+        if (!ray_t.surrounds(root)) {
             root = (h + sqrtd) / a;
-            if (root <= ray_t_min || root >= ray_t_max) {
+            if (!ray_t.surrounds(root)) {
                 return false;
             }
         }
