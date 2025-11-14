@@ -2,9 +2,10 @@
 #define HITTABLE_LIST_H
 
 #include "hittable.h"
-
+#include "ray.h"
 #include <memory>
 #include <vector>
+#include "interval.h"
 
 /* 局部注入命名空间，仅在当前文件内有效 */
 namespace {

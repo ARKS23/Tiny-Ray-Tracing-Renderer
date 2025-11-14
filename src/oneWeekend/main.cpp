@@ -12,6 +12,7 @@ int main() {
 
     // 摄像机
     camera cam;
-    cam.set_samples_per_pixel(50);
+    cam.set_samples_per_pixel(20);
+    cam.set_max_depth(4);
     cam.render(world);
 }

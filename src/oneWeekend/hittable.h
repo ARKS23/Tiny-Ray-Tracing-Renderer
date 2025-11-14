@@ -2,6 +2,7 @@
 #define HITTABLE_H
 
 #include "ray.h"
+#include "interval.h"
 
 /* 该结构记录相交顶点的位置，法向量，和对应的t值，光线是否从外部射入 */
 class hit_record {

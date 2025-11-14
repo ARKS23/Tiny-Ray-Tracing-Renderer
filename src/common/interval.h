@@ -1,11 +1,13 @@
 #ifndef INTERVAL_H
 #define INTERVAL_H
 #include <limits>
+#include "utils.h"
 
 /* 区间类工具类，用于管理最小值和最大值的实值区间 */
 class interval {
 public:
-    interval() : min_(std::numeric_limits<double>::infinity()), max_(-std::numeric_limits<double>::infinity()) {} //默认空区间
+    //interval() : min_(std::numeric_limits<double>::infinity()), max_(-std::numeric_limits<double>::infinity()) {} //默认空区间
+    interval() : min_(+infinity), max_(-infinity) {} //默认空区间
     interval(double min, double max): min_(min), max_(max) {}
 
 public:
@@ -27,7 +29,7 @@ public:
 };
 
 // 初始化静态成员函数，防止链接报错
-inline const interval interval::empty = interval(+std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity());
-inline const interval interval::universe = interval(-std::numeric_limits<double>::infinity(), +std::numeric_limits<double>::infinity());
+inline const interval interval::empty = interval(+infinity, -infinity);
+inline const interval interval::universe = interval(-infinity, +infinity);
 
 #endif

@@ -34,10 +34,4 @@ inline double random_double(double min_num, double max_num) {
     return min_num + (max_num - min_num) * random_double();
 }
 
-// 通用头文件
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
-#include "interval.h"
-
 #endif

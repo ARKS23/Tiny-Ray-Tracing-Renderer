@@ -3,6 +3,7 @@
 
 #include "hittable_list.h"
 #include "utils.h"
+#include "color.h"
 
 class camera {
 public:
@@ -19,21 +20,26 @@ public:
             for (int i = 0; i < image_width; ++i) {
                 color pixel_color(0, 0, 0);
                 for (int sample = 0; sample < sample_per_pixel; ++sample) { // 抗锯齿，像素点采样
-                    ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
+                    ray r = get_ray(i, j); // 获得采样点对应的光线
+                    pixel_color += ray_color(r, world, max_depth); // 计算光线的最近碰撞
                 }
-
-                write_color(outfile, pixel_color * pixel_samples_scale);
+                write_color(outfile, pixel_color * pixel_samples_scale); // 混合颜色
             }
         }
         std::clog << "\rDone.           \n";
         outfile.close();
     }
 
+public:
+    /* setter */
     void set_samples_per_pixel(unsigned int num) {
         /* 设置采样率 */
         sample_per_pixel = num;
         set_pixel_samples_scale();
+    }
+
+    void set_max_depth(unsigned int depth) {
+        max_depth = depth;
     }
 
 private:
@@ -65,12 +71,16 @@ private:
         set_pixel_samples_scale();
     }
 
-    color ray_color(const ray& r, const hittable_list& world) const {
+    color ray_color(const ray& r, const hittable_list& world, int depth) const {
+        if (depth <= 0) // 光线弹射到达最大次数，递归出口
+            return color(0.f, 0.f, 0.f);
+
         /* 对世界中的物体进行光线碰撞，计算出像素对应的颜色 */
         hit_record record;
-        if (world.hit(r, interval(0, infinity), record)) {
-            // 将法线向量映射到 0-1 的 RGB 颜色区间
-            return 0.5 * (record.normal + color(1.f, 1.f, 1.f));
+        if (world.hit(r, interval(0.001, infinity), record)) { // 由于浮点数误差，t_min为0的情况会让光线卡在表面弹射，直至消耗完递归深度，这类bug名为shadow ance
+            vec3 direction = random_on_heimisphere(record.normal);
+            // 模拟光线弹射，递归调用
+            return 0.5 * ray_color(ray(record.p, direction), world, depth - 1);
         }
 
         vec3 unit_direction = unit_vector(r.direction());
@@ -100,7 +110,7 @@ private:
     }
 
 private:
-    const std::string output_file_path = "E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/image/sphere_samples_50.ppm";
+    const std::string output_file_path = "E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/image/no_shadow_ance_sample20.ppm";
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 1920;
     int image_height;
@@ -112,6 +122,7 @@ private:
 private:
     unsigned int sample_per_pixel = 10; // 像素点采样率
     double pixel_samples_scale; // 像素点权重,最后取平均要用到
+    unsigned int max_depth = 10; // 光线弹射次数限制
 };
 
 #endif
