@@ -6,7 +6,8 @@
 
 class sphere : public hittable { // 实现hittable接口
 public:
-    sphere(const point3& center, double radius): center(center), radius(std::fmax(0, radius)) {}
+    sphere(const point3& center, double radius, shared_ptr<material> mat): center(center), radius(std::fmax(0, radius)) 
+    , mat(mat) {}
 
 public:
     virtual bool hit(const ray& r, interval ray_t, hit_record &record) const override {
@@ -31,13 +32,15 @@ public:
         record.p = r.at(record.t);
         vec3 outward_normal = (record.p - center) / radius; // 单位化法向量
         record.set_front_face(r, outward_normal);
+        record.mat = mat; // 记录材质
 
         return true;
     }
 
 private:
-    point3 center;
-    double radius;
+    point3 center;  // 球心坐标
+    double radius;  // 半径
+    shared_ptr<material> mat; // 材质
 };
 
 #endif

@@ -39,11 +39,19 @@ class vec3 {
     }
 
     double length() const {
+        /* 向量长度 */
         return std::sqrt(length_squared());
     }
 
     double length_squared() const {
+        /* 自身点积 */
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
+    }
+
+    bool near_zero() const {
+        /* 判零 */
+        double s = 1e-8;
+        return (std::fabs(e[0]) < s) && (std::fabs(e[1]) < s) && (std::fabs(e[2]) < s);
     }
 
     static vec3 random() {
@@ -124,6 +132,11 @@ inline vec3 random_on_heimisphere(const vec3 &normal) {
         return on_unit_sphere;
     else                                   // 在负半球，取反再返回
         return -on_unit_sphere;
+}
+
+inline vec3 reflect(const vec3& v, const vec3& n) {
+    /* v是入射光线, n是法向量, 求出射光线 */
+    return v - 2 * dot(v, n) * n;
 }
 
 #endif

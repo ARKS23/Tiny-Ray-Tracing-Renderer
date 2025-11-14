@@ -4,6 +4,7 @@
 #include "hittable_list.h"
 #include "utils.h"
 #include "color.h"
+#include "material.h"
 
 class camera {
 public:
@@ -78,9 +79,14 @@ private:
         /* 对世界中的物体进行光线碰撞，计算出像素对应的颜色 */
         hit_record record;
         if (world.hit(r, interval(0.001, infinity), record)) { // 由于浮点数误差，t_min为0的情况会让光线卡在表面弹射，直至消耗完递归深度，这类bug名为shadow ance
-            vec3 direction = record.normal + random_unit_vector(); // 兰伯反射
-            // 模拟光线弹射，递归调用
-            return 0.5 * ray_color(ray(record.p, direction), world, depth - 1);
+            ray scattered;
+            color attenuation;
+            if (record.mat->scatter(r, record, attenuation, scattered)) { // 物体反射光线
+                return attenuation * ray_color(scattered, world, depth - 1); // 光线弹射，并进行光强衰减
+            }
+            else {  // 完全吸收的情况
+                return color(0.f, 0.f, 0.f);
+            }
         }
 
         vec3 unit_direction = unit_vector(r.direction());
@@ -110,7 +116,7 @@ private:
     }
 
 private:
-    const std::string output_file_path = "E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/image/lamber_reflect_sample20.ppm";
+    const std::string output_file_path = "E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/image/material_sample10.ppm";
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 1920;
     int image_height;

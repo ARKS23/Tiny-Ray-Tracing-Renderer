@@ -4,6 +4,8 @@
 #include "ray.h"
 #include "interval.h"
 
+class material;
+
 /* 该结构记录相交顶点的位置，法向量，和对应的t值，光线是否从外部射入 */
 class hit_record {
 public:
@@ -11,6 +13,7 @@ public:
     vec3 normal;
     double t;
     bool front_face;
+    shared_ptr<material> mat;
 
 public:
     void set_front_face(const ray& r, const vec3& out_normal) {
