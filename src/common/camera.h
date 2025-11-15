@@ -49,25 +49,28 @@ private:
         image_height = static_cast<int>(image_width / aspect_ratio);
         image_height = (image_height < 1) ? 1 : image_height;
 
-        center = point3(0.f, 0.f, 0.f);
+        center = lookfrom;
 
         // 视口设置
-        double focal_length = 1.f; // 焦距
+        double focal_length = (lookfrom - lookat).length();
         double theta = degress_to_radians(vertical_fov);
         double h = std::tan(theta / 2);
         double viewport_height = 2.0 * h * focal_length;
         double viewport_width = viewport_height * (static_cast<double>(image_width) / image_height);
 
+        // 计算摄像机的局部参考系
+        viewTransform_();
+
         // 沿适口水平边和垂直边的向量
-        vec3 viewport_u = vec3(viewport_width, 0, 0);
-        vec3 viewport_v = vec3(0, -viewport_height, 0);
+        vec3 viewport_u = viewport_width * u;
+        vec3 viewport_v = viewport_height * -v;
 
         // 计算水平和垂直步长向量
         pixel_delta_u = viewport_u / image_width;
         pixel_delta_v = viewport_v / image_height;
 
         // 计算左上角的像素位置
-        vec3 viewport_upper_left = center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2; // z轴焦距变换 + 水平和垂直变换
+        vec3 viewport_upper_left = center - (focal_length * w) - viewport_u / 2 - viewport_v / 2; // z轴焦距变换 + 水平和垂直变换
         pixel_00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v); // 计算左上角(0, 0, -1)位置像素的中心点位置
 
         // 采样率权重设置
@@ -117,11 +120,17 @@ private:
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
 
+    void viewTransform_() {
+        /* 构建摄像机的局部坐标系：相当于TinyRenderer里的LookAt */
+        w = unit_vector(lookfrom - lookat);
+        u = unit_vector(cross(up, w));
+        v = cross(w, u);
+    }
+
 private:
-    const std::string output_file_path = "/Users/ark/图形学/Code/RayTracingPratice/image/dielectric_Schlick_material.ppm";
+    const std::string output_file_path = "/Users/ark/图形学/Code/RayTracingPratice/image/camera_transform.ppm";
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 1920;
-    double vertical_fov = 45.0;
     int image_height;
     point3 center;
     point3 pixel_00_loc;
@@ -132,6 +141,14 @@ private:
     unsigned int sample_per_pixel = 10; // 像素点采样率
     double pixel_samples_scale; // 像素点权重,最后取平均要用到
     unsigned int max_depth = 10; // 光线弹射次数限制
+
+private:
+    /* 摄像机视角相关 */
+    double vertical_fov = 45.0;
+    point3 lookfrom = point3(3, 3, 2);
+    point3 lookat = point3(0, 0, -1);
+    vec3 up = vec3(0, 1, 0);
+    vec3 u, v, w;
 };
 
 #endif
