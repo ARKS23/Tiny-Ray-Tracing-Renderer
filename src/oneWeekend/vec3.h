@@ -139,4 +139,12 @@ inline vec3 reflect(const vec3& v, const vec3& n) {
     return v - 2 * dot(v, n) * n;
 }
 
+inline vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat) {
+    /* uv:单位化入射方向，n是外法向量， etai_over_etat: 折射比  TODO:待推导*/
+    double cos_theta = std::fmin(dot(-uv, n), 1.0); // 入射光线与法线之间的余弦值
+    vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n); // 与法线垂直的方向分量
+    vec3 r_out_parallel = -std::sqrt(std::fabs(1 - r_out_perp.length_squared())) * n; // 与法线平行的分量
+    return r_out_perp + r_out_parallel; // 返回合并后的方向就是折射方向
+}
+
 #endif

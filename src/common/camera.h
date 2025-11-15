@@ -53,7 +53,9 @@ private:
 
         // 视口设置
         double focal_length = 1.f; // 焦距
-        double viewport_height = 2.0;
+        double theta = degress_to_radians(vertical_fov);
+        double h = std::tan(theta / 2);
+        double viewport_height = 2.0 * h * focal_length;
         double viewport_width = viewport_height * (static_cast<double>(image_width) / image_height);
 
         // 沿适口水平边和垂直边的向量
@@ -116,9 +118,10 @@ private:
     }
 
 private:
-    const std::string output_file_path = "/Users/ark/图形学/Code/RayTracingPratice/image/lamber_reflect_sample20.ppm";
+    const std::string output_file_path = "/Users/ark/图形学/Code/RayTracingPratice/image/dielectric_Schlick_material.ppm";
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 1920;
+    double vertical_fov = 45.0;
     int image_height;
     point3 center;
     point3 pixel_00_loc;
