@@ -147,4 +147,14 @@ inline vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat) {
     return r_out_perp + r_out_parallel; // 返回合并后的方向就是折射方向
 }
 
+inline vec3 random_in_uint_dis() {
+    /* 散焦盘中选择随机点 */
+    while (true)
+    {
+        point3 p = vec3(random_double(-1 , 1), random_double(-1 , 1), 0);
+        if (p.length_squared() < 1) return p;
+    }
+    
+}
+
 #endif

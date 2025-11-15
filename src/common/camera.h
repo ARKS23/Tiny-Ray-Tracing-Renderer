@@ -40,7 +40,16 @@ public:
     }
 
     void set_max_depth(unsigned int depth) {
+        /* 设置最大弹射深度 */
         max_depth = depth;
+    }
+
+    void set_defocus_angle(double defocus_angle) {
+        this->defocus_angle = defocus_angle;
+    }
+
+    void set_focus_dist(double focus_dist) {
+        this->focus_dist = focus_dist;
     }
 
 private:
@@ -143,10 +152,17 @@ private:
     unsigned int max_depth = 10; // 光线弹射次数限制
 
 private:
+    // 模拟焦距
+    double defocus_angle = 0;
+    double focus_dist = 10;
+    vec3 defocus_disk_u; // 散焦盘水平半径
+    vec3 defocus_disk_v; // 散焦盘垂直半径
+
+private:
     /* 摄像机视角相关 */
-    double vertical_fov = 45.0;
-    point3 lookfrom = point3(3, 3, 2);
-    point3 lookat = point3(0, 0, -1);
+    double vertical_fov = 25.0;
+    point3 lookfrom = point3(13, 2, 3);
+    point3 lookat = point3(0, 0, 0);
     vec3 up = vec3(0, 1, 0);
     vec3 u, v, w;
 };
