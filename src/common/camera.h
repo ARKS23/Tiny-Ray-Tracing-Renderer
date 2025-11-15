@@ -1,10 +1,14 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <thread>
+#include <mutex>
+
 #include "hittable_list.h"
 #include "utils.h"
 #include "color.h"
 #include "material.h"
+
 
 class camera {
 public:
@@ -28,6 +32,71 @@ public:
             }
         }
         std::clog << "\rDone.           \n";
+        outfile.close();
+    }
+
+    void render_multi_threads(const hittable_list &world) {
+        initialize();
+        // 创建内存缓冲区
+        std::vector<color> pixel_buffer(image_width * image_height);
+
+        // 准备线程
+        std::vector<std::thread> threads;
+
+        // 进度条的线程安全变量
+        std::atomic<int> rows_complted = 0;
+        std::mutex clog_mutex;
+
+        std::clog << "Starting render with " << thread_num << " threads.\n";
+
+        // 多线程逻辑
+        for (int t = 0; t < thread_num; ++t) {
+            // 每个线程负责的行范围
+            int start_row = t * image_height / thread_num;
+            int end_row = (t + 1) * image_height / thread_num;
+
+            // 启动线程
+            threads.emplace_back([&, start_row, end_row]() {
+                // 线程执行光线弹射计算
+                for (int j = start_row; j < end_row; ++j) {
+                    for (int i = 0; i < image_width; ++i) {
+                        color pixel_color(0, 0, 0);
+                        for (int sample = 0; sample < sample_per_pixel; ++sample) {
+                            ray r = get_ray(i, j);
+                            pixel_color += ray_color(r, world, max_depth);
+                        }
+                        // 结果先写入缓冲区
+                        pixel_buffer[j * image_width + i] = pixel_color * pixel_samples_scale;
+                    }
+
+                    // 更新进度条
+                    int done = ++rows_complted;
+                    if (done % 10 == 0) { // 每 10 行更新一次，减少锁竞争
+                        std::lock_guard<std::mutex> lock(clog_mutex);
+                        std::clog << "\rScanlines remaining: " << (image_height - done) << ' ' << std::flush;
+                    }
+                }
+            });
+        }
+
+        for (std::thread &t : threads) {
+            t.join();
+        }
+
+        std::clog << "\rRender complete. Writing to file...           \n";
+
+        // 5. 串行写入文件
+        std::ofstream outfile(output_file_path);
+        outfile << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+
+        for (int j = 0; j < image_height; ++j) {
+            for (int i = 0; i < image_width; ++i) {
+                // 从缓冲区读取颜色并写入文件
+                write_color(outfile, pixel_buffer[j * image_width + i]);
+            }
+        }
+
+        std::clog << "Done.\n";
         outfile.close();
     }
 
@@ -137,7 +206,7 @@ private:
     }
 
 private:
-    const std::string output_file_path = "/Users/ark/图形学/Code/RayTracingPratice/image/camera_transform.ppm";
+    const std::string output_file_path = "E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/image/camera_transform.ppm";
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 1920;
     int image_height;
@@ -165,6 +234,9 @@ private:
     point3 lookat = point3(0, 0, 0);
     vec3 up = vec3(0, 1, 0);
     vec3 u, v, w;
+
+private:
+    unsigned int thread_num = 24; // 多线程渲染的线程数目
 };
 
 #endif

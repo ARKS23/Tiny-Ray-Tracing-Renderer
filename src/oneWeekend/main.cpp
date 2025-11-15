@@ -74,10 +74,11 @@ void scene_main() {
     world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
     camera cam;
-    cam.set_max_depth(2);
-    cam.set_samples_per_pixel(1);
+    cam.set_max_depth(8);
+    cam.set_samples_per_pixel(50);
 
-    cam.render(world);
+    //cam.render(world);
+    cam.render_multi_threads(world);
 }
 
 int main() {
