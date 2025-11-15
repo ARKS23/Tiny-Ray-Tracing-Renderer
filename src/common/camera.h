@@ -116,7 +116,7 @@ private:
     }
 
 private:
-    const std::string output_file_path = "E:/ComputerGraphics/LearnRayTracing/Tiny-Ray-Tracing-Renderer/image/material_sample10.ppm";
+    const std::string output_file_path = "/Users/ark/图形学/Code/RayTracingPratice/image/lamber_reflect_sample20.ppm";
     double aspect_ratio = 16.0 / 9.0;
     int image_width = 1920;
     int image_height;
